@@ -5,7 +5,7 @@ This bundle contains all custom interaction scripts for your Webflow project. Th
 ## Bundle Information
 
 - **File**: `dist/main.iife.js`
-- **Size**: ~12.57 kB (4.26 kB gzipped)
+- **Size**: ~27.72 kB (8.87 kB gzipped)
 - **Format**: IIFE (Immediately Invoked Function Expression)
 - **Target**: ES2015+
 
@@ -17,6 +17,8 @@ The following libraries must be loaded **before** this bundle:
 2. **ScrollTrigger** (GSAP plugin)
 3. **Three.js** (for CRT effect)
 4. **CDG Anim Framework** (for animations)
+5. **Swiper** (for carousel/slider functionality)
+6. **Hls.js** (optional, for HLS video playback - only needed if using Bunny player with HLS)
 
 ## Installation in Webflow
 
@@ -36,6 +38,12 @@ In your Webflow project, go to **Project Settings > Custom Code > Head Code** an
 
 <!-- CDG Anim Framework -->
 <script src="https://cdn.jsdelivr.net/gh/nshreve/cdg-framework@v1.1.2/anim/cdg-anim.min.js"></script>
+
+<!-- Swiper (for carousels) -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<!-- Hls.js (optional - only needed for HLS video playback) -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 ```
 
 ### Step 2: Add Your Bundle via JSDelivr
@@ -67,7 +75,9 @@ The scripts must load in this exact order:
 2. ScrollTrigger Plugin
 3. Three.js
 4. CDG Anim Framework
-5. Your custom bundle (`main.iife.js`)
+5. Swiper
+6. Hls.js (if using HLS video)
+7. Your custom bundle (`main.iife.js`)
 
 ## Features Included
 
@@ -81,6 +91,9 @@ The bundle includes the following features:
 6. **Typewriter Effect** - Scroll-triggered typewriter text animation
 7. **SVG Flash Animation** - Hero title flash and blink effect
 8. **Pixel Burst** - Click-triggered particle burst effect
+9. **Email Gate** - Scroll-triggered email capture modal with localStorage expiry
+10. **Swiper Carousels** - Video and case study carousels
+11. **Bunny Player** - Advanced HLS video player with custom controls
 
 ## Required HTML Elements & Attributes
 
@@ -108,6 +121,23 @@ The bundle includes the following features:
 
 ### Pixel Burst
 - Elements with attribute `data-pixel-burst` (typically buttons)
+
+### Email Gate
+- Hero section with attribute `[data-hero-section]`
+- Email gate container with attribute `[data-email-gate]`
+- Form block with class `.gate_form-block.w-form`
+- Success message with class `.gate_sucess.w-form-done`
+
+### Swiper Carousels
+- Video carousel with class `.swiper-videos`
+- Case study carousel with class `.swiper-cases`
+- Navigation buttons with `[data-swiper="next-video"]`, `[data-swiper="prev-video"]`, etc.
+- Pagination elements with `[data-swiper="pagination"]`, `[data-swiper="pagination-case"]`
+
+### Bunny Player
+- Player container with attribute `[data-bunny-player-init]`
+- Video source via `data-player-src` attribute
+- Various control elements with `[data-player-control]`, `[data-player-timeline]`, etc.
 
 ## Browser Compatibility
 

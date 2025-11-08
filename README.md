@@ -33,6 +33,9 @@ The bundle will be generated in `dist/main.iife.js`.
 - Typewriter text animation
 - SVG flash animations
 - Pixel burst particle effects
+- Email gate with localStorage expiry
+- Swiper carousels (videos & cases)
+- Bunny HLS video player
 
 ## Dependencies
 
@@ -42,6 +45,8 @@ This bundle expects the following libraries to be loaded via CDN:
 - ScrollTrigger (GSAP plugin)
 - Three.js
 - CDG Anim Framework
+- Swiper (for carousels)
+- Hls.js (optional, for HLS video playback)
 
 See `INTEGRATION.md` for complete setup instructions.
 
