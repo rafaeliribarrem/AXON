@@ -1032,7 +1032,7 @@
   function initBunnyPlayer() {
     var players = document.querySelectorAll('[data-bunny-player-init]');
     console.log('🎬 Bunny Player: Found', players.length, 'player(s)');
-    
+
     if (players.length === 0) {
       console.warn('⚠️ Bunny Player: No players found with [data-bunny-player-init]');
       return;
@@ -1053,17 +1053,17 @@
 
       console.log('🎬 Bunny Player: Initializing with src:', src);
 
-      try { 
-        if (!video.paused) video.pause(); 
+      try {
+        if (!video.paused) video.pause();
       } catch(e) {
         console.warn('⚠️ Bunny Player: Error pausing video:', e);
       }
-      
+
       // Don't remove src if it's already set and working
       if (video.src && video.src !== src) {
-        try { 
-          video.removeAttribute('src'); 
-          video.load(); 
+        try {
+          video.removeAttribute('src');
+          video.load();
         } catch(e) {
           console.warn('⚠️ Bunny Player: Error resetting video src:', e);
         }
@@ -1081,7 +1081,7 @@
       function setFsAttr(v) { player.setAttribute('data-player-fullscreen', v ? 'true' : 'false'); }
       function setActivated(v) { player.setAttribute('data-player-activated', v ? 'true' : 'false'); }
       if (!player.hasAttribute('data-player-activated')) setActivated(false);
-      
+
       // Set initial status
       if (!player.hasAttribute('data-player-status')) {
         setStatus('idle');
@@ -1114,7 +1114,7 @@
 
       var isSafariNative = !!video.canPlayType('application/vnd.apple.mpegurl');
       var canUseHlsJs = !!(window.Hls && Hls.isSupported()) && !isSafariNative;
-      
+
       console.log('🎬 Bunny Player: Safari native HLS:', isSafariNative, '| Can use Hls.js:', canUseHlsJs);
 
       if (updateSize === 'true' && !isLazyMeta) {
@@ -1154,13 +1154,13 @@
         isAttached = true;
         console.log('🎬 Bunny Player: Attaching media...');
 
-        if (player._hls) { 
-          try { 
-            player._hls.destroy(); 
+        if (player._hls) {
+          try {
+            player._hls.destroy();
           } catch(e) {
             console.warn('⚠️ Bunny Player: Error destroying HLS:', e);
-          } 
-          player._hls = null; 
+          }
+          player._hls = null;
         }
 
         if (isSafariNative) {
@@ -1175,9 +1175,9 @@
           try {
             var hls = new Hls({ maxBufferLength: 10 });
             hls.attachMedia(video);
-            hls.on(Hls.Events.MEDIA_ATTACHED, function() { 
+            hls.on(Hls.Events.MEDIA_ATTACHED, function() {
               console.log('🎬 Bunny Player: HLS media attached, loading source');
-              hls.loadSource(src); 
+              hls.loadSource(src);
             });
             hls.on(Hls.Events.MANIFEST_PARSED, function() {
               console.log('🎬 Bunny Player: HLS manifest parsed');
@@ -1310,38 +1310,38 @@
       video.addEventListener('loadedmetadata', updateBufferedBar);
       video.addEventListener('durationchange', updateBufferedBar);
 
-      video.addEventListener('play', function() { 
+      video.addEventListener('play', function() {
         console.log('🎬 Bunny Player: Video play event');
-        setActivated(true); 
-        cancelAnimationFrame(rafId); 
-        loop(); 
-        setStatus('playing'); 
+        setActivated(true);
+        cancelAnimationFrame(rafId);
+        loop();
+        setStatus('playing');
       });
-      video.addEventListener('playing', function() { 
+      video.addEventListener('playing', function() {
         console.log('🎬 Bunny Player: Video playing event');
-        pendingPlay = false; 
-        setStatus('playing'); 
+        pendingPlay = false;
+        setStatus('playing');
       });
-      video.addEventListener('pause', function() { 
-        pendingPlay = false; 
-        cancelAnimationFrame(rafId); 
-        updateProgressVisuals(); 
-        setStatus('paused'); 
+      video.addEventListener('pause', function() {
+        pendingPlay = false;
+        cancelAnimationFrame(rafId);
+        updateProgressVisuals();
+        setStatus('paused');
       });
-      video.addEventListener('waiting', function() { 
+      video.addEventListener('waiting', function() {
         console.log('🎬 Bunny Player: Video waiting for data');
-        setStatus('loading'); 
+        setStatus('loading');
       });
-      video.addEventListener('canplay', function() { 
+      video.addEventListener('canplay', function() {
         console.log('🎬 Bunny Player: Video can play');
-        readyIfIdle(player, pendingPlay); 
+        readyIfIdle(player, pendingPlay);
       });
-      video.addEventListener('ended', function() { 
-        pendingPlay = false; 
-        cancelAnimationFrame(rafId); 
-        updateProgressVisuals(); 
-        setStatus('paused'); 
-        setActivated(false); 
+      video.addEventListener('ended', function() {
+        pendingPlay = false;
+        cancelAnimationFrame(rafId);
+        updateProgressVisuals();
+        setStatus('paused');
+        setActivated(false);
       });
       video.addEventListener('error', function(e) {
         console.error('❌ Bunny Player: Video error', e);
