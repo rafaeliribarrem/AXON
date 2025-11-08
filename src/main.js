@@ -731,6 +731,11 @@
     }
   };
 
+  const SWIPER_RETRY_DELAY = 200;
+  const SWIPER_MAX_ATTEMPTS = 20;
+  let swiperObserver = null;
+  let swiperWaitStarted = false;
+
   function throttle(func, limit) {
     let inThrottle;
     return function(...args) {
@@ -793,7 +798,7 @@
   }
 
   function initSwiper(config, name) {
-    if (typeof Swiper === 'undefined') {
+    if (typeof window.Swiper === 'undefined') {
       console.warn('Swiper library not loaded');
       return null;
     }
@@ -802,6 +807,11 @@
     if (!container) {
       console.warn(`⚠️ Swiper container not found: ${config.selector}`);
       return null;
+    }
+
+    if (container.dataset.swiperInitialized === 'true' && container.swiper) {
+      console.log(`ℹ️ Swiper (${name}) already initialized`);
+      return container.swiper;
     }
 
     const swiperConfig = {
@@ -839,7 +849,14 @@
       }
     };
 
-    return new Swiper(config.selector, swiperConfig);
+    try {
+      const instance = new window.Swiper(container, swiperConfig);
+      container.dataset.swiperInitialized = 'true';
+      return instance;
+    } catch (error) {
+      console.error(`❌ Swiper (${name}) failed to initialize`, error);
+      return null;
+    }
   }
 
   function initEmailGate() {
@@ -1002,27 +1019,63 @@
     initSwiper(SWIPER_CONFIG.cases, 'cases');
   }
 
+  function observeSwiperContainers() {
+    if (swiperObserver || typeof MutationObserver === 'undefined') {
+      return;
+    }
+
+    swiperObserver = new MutationObserver(() => {
+      initSwipers();
+    });
+
+    swiperObserver.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  function waitForSwiper(attempt = 0) {
+    if (typeof window.Swiper === 'undefined') {
+      if (attempt === 0) {
+        console.log('🌀 Waiting for Swiper to become available...');
+      }
+
+      if (attempt >= SWIPER_MAX_ATTEMPTS) {
+        console.error('❌ Swiper library not found after waiting');
+        return;
+      }
+
+      setTimeout(() => waitForSwiper(attempt + 1), SWIPER_RETRY_DELAY);
+      return;
+    }
+
+    if (attempt > 0) {
+      console.log('✅ Swiper library detected');
+    }
+
+    initSwipers();
+    observeSwiperContainers();
+  }
+
   function init() {
     window.addEventListener('load', initEmailGate);
 
+    const startSwiperWait = () => {
+      if (swiperWaitStarted) return;
+      swiperWaitStarted = true;
+      waitForSwiper();
+    };
+
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initSwipers);
+      document.addEventListener('DOMContentLoaded', startSwiperWait);
     } else {
-      initSwipers();
+      startSwiperWait();
     }
+
+    window.addEventListener('load', startSwiperWait);
   }
 
-  if (typeof Swiper !== 'undefined') {
-    init();
-  } else {
-    window.addEventListener('load', () => {
-      if (typeof Swiper !== 'undefined') {
-        init();
-      } else {
-        console.error('❌ Swiper library not found');
-      }
-    });
-  }
+  init();
 })();
 
 // Bunny Player
