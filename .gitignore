@@ -1,6 +1,7 @@
 node_modules/
-dist/
 .DS_Store
 *.log
 .vite/
+
+# Note: dist/ is included in git for JSDelivr CDN deployment
 

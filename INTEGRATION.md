@@ -38,16 +38,26 @@ In your Webflow project, go to **Project Settings > Custom Code > Head Code** an
 <script src="https://cdn.jsdelivr.net/gh/nshreve/cdg-framework@v1.1.2/anim/cdg-anim.min.js"></script>
 ```
 
-### Step 2: Add Your Bundle
+### Step 2: Add Your Bundle via JSDelivr
 
-After the external libraries, add your bundled script:
+After the external libraries, add your bundled script using JSDelivr:
 
+**Option 1: From GitHub (Recommended)**
 ```html
-<!-- Your Custom Bundle -->
-<script src="YOUR_CDN_URL/dist/main.iife.js"></script>
+<!-- Your Custom Bundle via JSDelivr -->
+<script src="https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@main/dist/main.iife.js"></script>
 ```
 
-**Important**: Replace `YOUR_CDN_URL` with your actual CDN URL where you've hosted the bundle.
+**Option 2: From GitHub Release/Tag (Best for Production)**
+```html
+<!-- Your Custom Bundle via JSDelivr (versioned) -->
+<script src="https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@v1.0.0/dist/main.iife.js"></script>
+```
+
+**Replace:**
+- `YOUR_USERNAME` - Your GitHub username
+- `YOUR_REPO` - Your repository name
+- `@main` or `@v1.0.0` - Branch name or release tag
 
 ### Step 3: Load Order
 
@@ -140,7 +150,59 @@ npm run build
 
 The output will be in `dist/main.iife.js`.
 
-## CDN Deployment
+## CDN Deployment with JSDelivr
 
-Upload `dist/main.iife.js` to your CDN and update the URL in your Webflow project settings.
+### GitHub Setup
+
+1. **Initialize Git** (if not already done):
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   ```
+
+2. **Create GitHub Repository**:
+   - Go to GitHub and create a new repository
+   - Push your code:
+     ```bash
+     git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+     git branch -M main
+     git push -u origin main
+     ```
+
+3. **Create a Release** (for versioning):
+   - Go to your GitHub repo
+   - Click "Releases" → "Create a new release"
+   - Tag: `v1.0.0` (or your version)
+   - Title: `v1.0.0`
+   - Upload `dist/main.iife.js` as a release asset (optional, but recommended)
+
+### JSDelivr URLs
+
+**Latest from main branch:**
+```
+https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@main/dist/main.iife.js
+```
+
+**Specific version (recommended for production):**
+```
+https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@v1.0.0/dist/main.iife.js
+```
+
+**With minified version (if you add .min.js):**
+```
+https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@main/dist/main.iife.min.js
+```
+
+### Updating the Bundle
+
+1. Make changes to `src/main.js`
+2. Rebuild: `npm run build`
+3. Commit and push:
+   ```bash
+   git add dist/main.iife.js
+   git commit -m "Update bundle"
+   git push
+   ```
+4. For versioned releases, create a new GitHub release with the updated file
 
