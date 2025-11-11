@@ -97,122 +97,8 @@
   }
 })();
 
-// Page Transition Grid
-(function() {
-  'use strict';
-
-  function adjustGrid() {
-    return new Promise((resolve) => {
-      const transition = document.querySelector('.transition');
-      if (!transition) {
-        resolve();
-        return;
-      }
-
-      const computedStyle = window.getComputedStyle(transition);
-      const gridTemplateColumns = computedStyle.getPropertyValue('grid-template-columns');
-      const columns = gridTemplateColumns.split(' ').length;
-
-      const blockSize = window.innerWidth / columns;
-      const rowsNeeded = Math.ceil(window.innerHeight / blockSize);
-
-      transition.style.gridTemplateRows = `repeat(${rowsNeeded}, ${blockSize}px)`;
-
-      const totalBlocks = columns * rowsNeeded;
-
-      transition.innerHTML = '';
-
-      // Use DocumentFragment for better performance
-      const fragment = document.createDocumentFragment();
-      for (let i = 0; i < totalBlocks; i++) {
-        const block = document.createElement('div');
-        block.classList.add('transition-block');
-        fragment.appendChild(block);
-      }
-      transition.appendChild(fragment);
-
-      resolve();
-    });
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    if (typeof gsap === 'undefined') {
-      return;
-    }
-
-    const transition = document.querySelector('.transition');
-    if (!transition) {
-      return;
-    }
-
-    adjustGrid().then(() => {
-      let pageLoadTimeline = gsap.timeline({
-        onStart: () => {
-          gsap.set(".transition", { background: "transparent" });
-        },
-        onComplete: () => {
-          gsap.set(".transition", { display: "none" });
-        },
-        defaults: {
-          ease: "linear"
-        }
-      });
-
-      pageLoadTimeline.to(".transition-block", {
-        opacity: 0,
-        duration: 0.1,
-        stagger: { amount: 0.75, from: "random" },
-      }, 0.5);
-    });
-
-    const validLinks = Array.from(document.querySelectorAll("a")).filter(link => {
-      const href = link.getAttribute("href") || "";
-      const hostname = new URL(link.href, window.location.origin).hostname;
-
-      return (
-        hostname === window.location.hostname &&
-        !href.startsWith("#") &&
-        link.getAttribute("target") !== "_blank" &&
-        !link.hasAttribute("data-transition-prevent")
-      );
-    });
-
-    validLinks.forEach(link => {
-      link.addEventListener("click", (event) => {
-        event.preventDefault();
-        const destination = link.href;
-
-        gsap.set(".transition", { display: "grid" });
-        gsap.fromTo(
-          ".transition-block",
-          { autoAlpha: 0 },
-          {
-            autoAlpha: 1,
-            duration: 0.001,
-            ease: "linear",
-            stagger: { amount: 0.5, from: "random" },
-            onComplete: () => {
-              window.location.href = destination;
-            }
-          }
-        );
-      });
-    });
-
-    window.addEventListener("pageshow", (event) => {
-      if (event.persisted) {
-        window.location.reload();
-      }
-    });
-
-    // Debounce resize handler for better performance
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(adjustGrid, 150);
-    });
-  });
-})();
+// Page Transition Grid (DISABLED)
+// This feature has been removed for performance optimization
 
 // THREE.JS CRT Effect
 (function() {
@@ -431,8 +317,95 @@
   }
 })();
 
-// Pixelate Reveal (DISABLED)
-// This feature has been removed for performance optimization
+// Pixelate Reveal
+(function() {
+  'use strict';
+
+  window.addEventListener('load', () => {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
+      return;
+    }
+
+    const images = document.querySelectorAll('[data-pixelate-img]');
+    if (images.length === 0) return;
+
+    images.forEach((img) => {
+      if (img.complete && img.naturalWidth > 0) {
+        pixelateReveal(img);
+      } else {
+        img.addEventListener('load', () => pixelateReveal(img));
+      }
+    });
+
+    function pixelateReveal(img) {
+      const wrapper = img.parentElement;
+      if (!wrapper) return;
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d', { willReadFrequently: false });
+
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+
+      Object.assign(canvas.style, {
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        zIndex: '2'
+      });
+
+      if (getComputedStyle(wrapper).position === 'static') {
+        wrapper.style.position = 'relative';
+      }
+
+      img.style.opacity = '0';
+      wrapper.appendChild(canvas);
+
+      const pixelSizes = [50, 30, 20, 10, 5, 2, 1];
+
+      drawPixelated(pixelSizes[0]);
+
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: wrapper,
+          start: 'top 80%',
+          toggleActions: 'play none none none',
+        }
+      });
+
+      pixelSizes.forEach((size, i) => {
+        tl.call(() => drawPixelated(size), null, i * 0.15);
+      });
+
+      tl.call(() => {
+        canvas.remove();
+        img.style.opacity = '1';
+      });
+
+      function drawPixelated(pixelSize) {
+        const w = canvas.width;
+        const h = canvas.height;
+
+        ctx.imageSmoothingEnabled = false;
+        ctx.clearRect(0, 0, w, h);
+
+        const smallW = Math.max(1, Math.ceil(w / pixelSize));
+        const smallH = Math.max(1, Math.ceil(h / pixelSize));
+
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCanvas.width = smallW;
+        tempCanvas.height = smallH;
+
+        tempCtx.drawImage(img, 0, 0, smallW, smallH);
+        ctx.drawImage(tempCanvas, 0, 0, w, h);
+      }
+    }
+  });
+})();
 
 // Typewriter Effect
 (function() {

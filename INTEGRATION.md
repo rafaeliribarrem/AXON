@@ -5,7 +5,7 @@ This bundle contains all custom interaction scripts for your Webflow project. Th
 ## Bundle Information
 
 - **File**: `dist/main.iife.js`
-- **Size**: ~26.17 kB (8.19 kB gzipped)
+- **Size**: ~25.55 kB (8.04 kB gzipped)
 - **Format**: IIFE (Immediately Invoked Function Expression)
 - **Target**: ES2015+
 
@@ -87,8 +87,8 @@ The bundle includes the following features:
 
 1. **Custom Cursor** - Interactive cursor with hover states
 2. **Hamburger Toggle** - Navigation menu icon switching
-3. **Page Transitions** - Grid-based page transition effects
-4. **CRT Effect** - Retro CRT monitor shader overlay (deferred for performance)
+3. **CRT Effect** - Retro CRT monitor shader overlay (deferred for performance)
+4. **Pixelate Reveal** - Scroll-triggered pixelation reveal for images
 5. **Typewriter Effect** - Scroll-triggered typewriter text animation
 6. **SVG Flash Animation** - Hero title flash and blink effect
 7. **Pixel Burst** - Click-triggered particle burst effect
@@ -96,7 +96,7 @@ The bundle includes the following features:
 9. **Swiper Carousels** - Video and case study carousels
 10. **Bunny Player** - Advanced HLS video player with custom controls
 
-**Note:** Pixelate Reveal has been removed for performance optimization.
+**Note:** Page Transitions (grid-based animation) has been removed for performance optimization.
 
 ## Required HTML Elements & Attributes
 
@@ -108,9 +108,8 @@ The bundle includes the following features:
 - Menu icon with class `.nav_hamburguer-menu`
 - Exit icon with class `.nav_hamburguer-exit`
 
-### Page Transitions
-- Element with class `.transition`
-- Child elements with class `.transition-block` (created automatically)
+### Pixelate Reveal
+- Images with attribute `data-pixelate-img`
 
 ### Typewriter
 - Elements with attribute `data-typewriter`
@@ -164,12 +163,6 @@ The bundle includes the following features:
 - Check browser WebGL support
 - Verify no CSS conflicts with z-index
 
-### Page Transitions Not Working
-
-- Ensure GSAP is loaded
-- Verify `.transition` element exists in HTML
-- Check that links have correct attributes (not `target="_blank"`, not anchor links)
-
 ## Performance Optimizations
 
 The bundle includes several performance optimizations for faster initial page load:
@@ -184,9 +177,8 @@ The Three.js CRT effect (the most expensive operation) is deferred using `reques
 Each feature checks if required DOM elements exist before initializing, preventing unnecessary work.
 
 ### 4. **Optimized DOM Operations**
-- Page transition grid uses DocumentFragment for efficient batch DOM insertion
-- Resize handlers are debounced (150ms) to prevent excessive recalculations
 - Swiper initialization retry attempts reduced from 20 to 10
+- Resize handlers are debounced where needed (150ms)
 
 ### 5. **Efficient Event Listeners**
 Scroll and touch handlers use passive event listeners where possible for better scrolling performance.
