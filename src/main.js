@@ -126,11 +126,14 @@
 
       transition.innerHTML = '';
 
+      // Use DocumentFragment for better performance
+      const fragment = document.createDocumentFragment();
       for (let i = 0; i < totalBlocks; i++) {
         const block = document.createElement('div');
         block.classList.add('transition-block');
-        transition.appendChild(block);
+        fragment.appendChild(block);
       }
+      transition.appendChild(fragment);
 
       resolve();
     });
@@ -139,6 +142,12 @@
   document.addEventListener("DOMContentLoaded", () => {
     if (typeof gsap === 'undefined') {
       console.warn('GSAP not loaded. Page transitions will not work.');
+      return;
+    }
+
+    const transition = document.querySelector('.transition');
+    if (!transition) {
+      console.warn('Page transition element (.transition) not found. Skipping page transitions.');
       return;
     }
 
@@ -202,7 +211,12 @@
       }
     });
 
-    window.addEventListener('resize', adjustGrid);
+    // Debounce resize handler for better performance
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(adjustGrid, 150);
+    });
   });
 })();
 
@@ -210,81 +224,82 @@
 (function() {
   'use strict';
 
-  if (typeof THREE === 'undefined') {
-    console.warn('Three.js not loaded. CRT effect will not work.');
-    return;
-  }
+  function initCRTEffect() {
+    if (typeof THREE === 'undefined') {
+      console.warn('Three.js not loaded. CRT effect will not work.');
+      return;
+    }
 
-  const isMobile = () => window.innerWidth < 768;
+      const isMobile = () => window.innerWidth < 768;
 
-  const CONFIG = {
-    scanlineOpacity: 0.07,
-    scanlineCount: 2000,
-    barrelPower: 1.006,
-    barrelPowerMobile: 1.0,
-    vignetteStrength: 0.5,
-    vignetteStrengthMobile: 0,
-    vignetteRadius: 0.7,
-    vignetteRadiusMobile: 0,
-    beamIntensity: 0,
-    beamSpeed: 0,
-    glowSize: 0,
-    noiseAmount: 0.03,
-    flickerAmount: 0.004,
-    chromaticAberration: 0.1,
-    brightness: 1
-  };
+    const CONFIG = {
+      scanlineOpacity: 0.07,
+      scanlineCount: 2000,
+      barrelPower: 1.006,
+      barrelPowerMobile: 1.0,
+      vignetteStrength: 0.5,
+      vignetteStrengthMobile: 0,
+      vignetteRadius: 0.7,
+      vignetteRadiusMobile: 0,
+      beamIntensity: 0,
+      beamSpeed: 0,
+      glowSize: 0,
+      noiseAmount: 0.03,
+      flickerAmount: 0.004,
+      chromaticAberration: 0.1,
+      brightness: 1
+    };
 
-  const renderer = new THREE.WebGLRenderer({
-    alpha: true,
-    premultipliedAlpha: false,
-    antialias: false
-  });
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      premultipliedAlpha: false,
+      antialias: false
+    });
 
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setClearColor(0x000000, 0);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
 
-  renderer.domElement.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 999999;
-  `;
+    renderer.domElement.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999999;
+    `;
 
-  document.body.appendChild(renderer.domElement);
+    document.body.appendChild(renderer.domElement);
 
-  const scene = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    const scene = new THREE.Scene();
+    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-  const material = new THREE.ShaderMaterial({
-    uniforms: {
-      time: { value: 0 },
-      resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-      scanlineOpacity: { value: CONFIG.scanlineOpacity },
-      scanlineCount: { value: CONFIG.scanlineCount },
-      barrelPower: { value: isMobile() ? CONFIG.barrelPowerMobile : CONFIG.barrelPower },
-      vignetteStrength: { value: CONFIG.vignetteStrength },
-      vignetteRadius: { value: CONFIG.vignetteRadius },
-      beamIntensity: { value: CONFIG.beamIntensity },
-      beamSpeed: { value: CONFIG.beamSpeed },
-      glowSize: { value: CONFIG.glowSize },
-      noiseAmount: { value: CONFIG.noiseAmount },
-      flickerAmount: { value: CONFIG.flickerAmount },
-      chromaticAberration: { value: CONFIG.chromaticAberration },
-      brightness: { value: CONFIG.brightness }
-    },
-    vertexShader: `
-      varying vec2 vUv;
-      void main() {
-        vUv = uv;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-      }
-    `,
-    fragmentShader: `
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        time: { value: 0 },
+        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+        scanlineOpacity: { value: CONFIG.scanlineOpacity },
+        scanlineCount: { value: CONFIG.scanlineCount },
+        barrelPower: { value: isMobile() ? CONFIG.barrelPowerMobile : CONFIG.barrelPower },
+        vignetteStrength: { value: CONFIG.vignetteStrength },
+        vignetteRadius: { value: CONFIG.vignetteRadius },
+        beamIntensity: { value: CONFIG.beamIntensity },
+        beamSpeed: { value: CONFIG.beamSpeed },
+        glowSize: { value: CONFIG.glowSize },
+        noiseAmount: { value: CONFIG.noiseAmount },
+        flickerAmount: { value: CONFIG.flickerAmount },
+        chromaticAberration: { value: CONFIG.chromaticAberration },
+        brightness: { value: CONFIG.brightness }
+      },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
       precision highp float;
 
       uniform float time;
@@ -364,50 +379,63 @@
         darkness = mix(darkness, 1.0, edge);
         darkness *= brightness;
 
-        gl_FragColor = vec4(0.0, 0.0, 0.0, darkness);
+          gl_FragColor = vec4(0.0, 0.0, 0.0, darkness);
       }
-    `,
-    transparent: true,
-    blending: THREE.NormalBlending,
-    depthTest: false,
-    depthWrite: false
-  });
-
-  const geometry = new THREE.PlaneGeometry(2, 2);
-  const mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh);
-
-  function onResize() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    renderer.setSize(width, height);
-    material.uniforms.resolution.value.set(width, height);
-
-    material.uniforms.barrelPower.value = isMobile()
-      ? CONFIG.barrelPowerMobile
-      : CONFIG.barrelPower;
-  }
-  window.addEventListener('resize', onResize);
-
-  function animate(time) {
-    material.uniforms.time.value = time * 0.001;
-    renderer.render(scene, camera);
-    requestAnimationFrame(animate);
-  }
-  animate(0);
-
-  window.crtConfig = CONFIG;
-  window.updateCRT = () => {
-    Object.keys(CONFIG).forEach(key => {
-      if (material.uniforms[key]) {
-        material.uniforms[key].value = CONFIG[key];
-      }
+      `,
+      transparent: true,
+      blending: THREE.NormalBlending,
+      depthTest: false,
+      depthWrite: false
     });
 
-    material.uniforms.barrelPower.value = isMobile()
-      ? CONFIG.barrelPowerMobile
-      : CONFIG.barrelPower;
-  };
+    const geometry = new THREE.PlaneGeometry(2, 2);
+    const mesh = new THREE.Mesh(geometry, material);
+    scene.add(mesh);
+
+    function onResize() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      renderer.setSize(width, height);
+      material.uniforms.resolution.value.set(width, height);
+
+      material.uniforms.barrelPower.value = isMobile()
+        ? CONFIG.barrelPowerMobile
+        : CONFIG.barrelPower;
+    }
+    window.addEventListener('resize', onResize);
+
+    function animate(time) {
+      material.uniforms.time.value = time * 0.001;
+      renderer.render(scene, camera);
+      requestAnimationFrame(animate);
+    }
+    animate(0);
+
+    window.crtConfig = CONFIG;
+    window.updateCRT = () => {
+      Object.keys(CONFIG).forEach(key => {
+        if (material.uniforms[key]) {
+          material.uniforms[key].value = CONFIG[key];
+        }
+      });
+
+      material.uniforms.barrelPower.value = isMobile()
+        ? CONFIG.barrelPowerMobile
+        : CONFIG.barrelPower;
+    };
+  }
+
+  // Defer CRT initialization for better initial page load performance
+  if (window.requestIdleCallback) {
+    requestIdleCallback(initCRTEffect, { timeout: 2000 });
+  } else {
+    // Fallback: initialize after page load
+    if (document.readyState === 'complete') {
+      setTimeout(initCRTEffect, 100);
+    } else {
+      window.addEventListener('load', () => setTimeout(initCRTEffect, 100));
+    }
+  }
 })();
 
 // Pixelate Reveal
@@ -732,7 +760,7 @@
   };
 
   const SWIPER_RETRY_DELAY = 200;
-  const SWIPER_MAX_ATTEMPTS = 20;
+  const SWIPER_MAX_ATTEMPTS = 10; // Reduced from 20 for better performance
   let swiperObserver = null;
   let swiperWaitStarted = false;
 
