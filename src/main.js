@@ -344,8 +344,19 @@
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d', { willReadFrequently: false });
 
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
+      // Limit canvas size for better performance (max 2000px)
+      const maxSize = 2000;
+      let canvasWidth = img.naturalWidth;
+      let canvasHeight = img.naturalHeight;
+
+      if (canvasWidth > maxSize || canvasHeight > maxSize) {
+        const ratio = Math.min(maxSize / canvasWidth, maxSize / canvasHeight);
+        canvasWidth = Math.floor(canvasWidth * ratio);
+        canvasHeight = Math.floor(canvasHeight * ratio);
+      }
+
+      canvas.width = canvasWidth;
+      canvas.height = canvasHeight;
 
       Object.assign(canvas.style, {
         position: 'absolute',
@@ -364,7 +375,8 @@
       img.style.opacity = '0';
       wrapper.appendChild(canvas);
 
-      const pixelSizes = [50, 30, 20, 10, 5, 2, 1];
+      // Reduced steps from 7 to 4 for better performance
+      const pixelSizes = [40, 15, 5, 1];
 
       drawPixelated(pixelSizes[0]);
 
@@ -376,8 +388,9 @@
         }
       });
 
+      // Faster timing: 0.1s between steps instead of 0.15s
       pixelSizes.forEach((size, i) => {
-        tl.call(() => drawPixelated(size), null, i * 0.15);
+        tl.call(() => drawPixelated(size), null, i * 0.1);
       });
 
       tl.call(() => {
