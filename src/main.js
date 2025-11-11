@@ -750,14 +750,9 @@
       watchOverflow: true
     };
 
-    try {
-      const instance = new window.Swiper(container, swiperConfig);
-      container.dataset.swiperInitialized = 'true';
-      return instance;
-    } catch (error) {
-      console.error(`❌ Swiper (${name}) failed to initialize`, error);
-      return null;
-    }
+    const instance = new window.Swiper(container, swiperConfig);
+    container.dataset.swiperInitialized = 'true';
+    return instance;
   }
 
   function initEmailGate() {
@@ -921,7 +916,6 @@
   function waitForSwiper(attempt = 0) {
     if (typeof window.Swiper === 'undefined') {
       if (attempt >= SWIPER_MAX_ATTEMPTS) {
-        console.error('❌ Swiper library not found after waiting');
         return;
       }
 
