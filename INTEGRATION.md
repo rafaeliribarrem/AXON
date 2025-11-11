@@ -5,7 +5,7 @@ This bundle contains all custom interaction scripts for your Webflow project. Th
 ## Bundle Information
 
 - **File**: `dist/main.iife.js`
-- **Size**: ~31.08 kB (9.75 kB gzipped)
+- **Size**: ~26.17 kB (8.19 kB gzipped)
 - **Format**: IIFE (Immediately Invoked Function Expression)
 - **Target**: ES2015+
 
@@ -88,14 +88,15 @@ The bundle includes the following features:
 1. **Custom Cursor** - Interactive cursor with hover states
 2. **Hamburger Toggle** - Navigation menu icon switching
 3. **Page Transitions** - Grid-based page transition effects
-4. **CRT Effect** - Retro CRT monitor shader overlay
-5. **Pixelate Reveal** - Scroll-triggered pixelation reveal for images
-6. **Typewriter Effect** - Scroll-triggered typewriter text animation
-7. **SVG Flash Animation** - Hero title flash and blink effect
-8. **Pixel Burst** - Click-triggered particle burst effect
-9. **Email Gate** - Scroll-triggered email capture modal with localStorage expiry
-10. **Swiper Carousels** - Video and case study carousels
-11. **Bunny Player** - Advanced HLS video player with custom controls
+4. **CRT Effect** - Retro CRT monitor shader overlay (deferred for performance)
+5. **Typewriter Effect** - Scroll-triggered typewriter text animation
+6. **SVG Flash Animation** - Hero title flash and blink effect
+7. **Pixel Burst** - Click-triggered particle burst effect
+8. **Email Gate** - Scroll-triggered email capture modal with localStorage expiry
+9. **Swiper Carousels** - Video and case study carousels
+10. **Bunny Player** - Advanced HLS video player with custom controls
+
+**Note:** Pixelate Reveal has been removed for performance optimization.
 
 ## Required HTML Elements & Attributes
 
@@ -110,9 +111,6 @@ The bundle includes the following features:
 ### Page Transitions
 - Element with class `.transition`
 - Child elements with class `.transition-block` (created automatically)
-
-### Pixelate Reveal
-- Images with attribute `data-pixelate-img`
 
 ### Typewriter
 - Elements with attribute `data-typewriter`

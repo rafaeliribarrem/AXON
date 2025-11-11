@@ -38,14 +38,10 @@
     const exitIcon = document.querySelector(".nav_hamburguer-exit");
 
     if (!button) {
-      console.warn("⚠️ Hamburger toggle: .nav_1_btn_wrap not found");
       return;
     }
 
     if (!menuIcon || !exitIcon) {
-      console.warn(
-        "⚠️ Hamburger toggle: Menu or exit icon not found. Expected classes: .nav_hamburguer-menu and .nav_hamburguer-exit"
-      );
       return;
     }
 
@@ -141,13 +137,11 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     if (typeof gsap === 'undefined') {
-      console.warn('GSAP not loaded. Page transitions will not work.');
       return;
     }
 
     const transition = document.querySelector('.transition');
     if (!transition) {
-      console.warn('Page transition element (.transition) not found. Skipping page transitions.');
       return;
     }
 
@@ -226,7 +220,6 @@
 
   function initCRTEffect() {
     if (typeof THREE === 'undefined') {
-      console.warn('Three.js not loaded. CRT effect will not work.');
       return;
     }
 
@@ -438,109 +431,15 @@
   }
 })();
 
-// Pixelate Reveal
-(function() {
-  'use strict';
-
-  window.addEventListener('load', () => {
-    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-      console.warn('GSAP/ScrollTrigger not loaded. Pixelate reveal will not work.');
-      return;
-    }
-
-    const images = document.querySelectorAll('[data-pixelate-img]');
-    if (images.length === 0) return;
-
-    images.forEach((img) => {
-      if (img.complete && img.naturalWidth > 0) {
-        pixelateReveal(img);
-      } else {
-        img.addEventListener('load', () => pixelateReveal(img));
-        img.addEventListener('error', () => {
-          console.warn('Failed to load image:', img.src);
-        });
-      }
-    });
-
-    function pixelateReveal(img) {
-      const wrapper = img.parentElement;
-      if (!wrapper) return;
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d', { willReadFrequently: false });
-
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-
-      Object.assign(canvas.style, {
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        zIndex: '2'
-      });
-
-      if (getComputedStyle(wrapper).position === 'static') {
-        wrapper.style.position = 'relative';
-      }
-
-      img.style.opacity = '0';
-      wrapper.appendChild(canvas);
-
-      const pixelSizes = [50, 30, 20, 10, 5, 2, 1];
-
-      drawPixelated(pixelSizes[0]);
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: wrapper,
-          start: 'top 80%',
-          toggleActions: 'play none none none',
-        }
-      });
-
-      pixelSizes.forEach((size, i) => {
-        tl.call(() => drawPixelated(size), null, i * 0.15);
-      });
-
-      tl.call(() => {
-        canvas.remove();
-        img.style.opacity = '1';
-      });
-
-      function drawPixelated(pixelSize) {
-        const w = canvas.width;
-        const h = canvas.height;
-
-        ctx.imageSmoothingEnabled = false;
-        ctx.clearRect(0, 0, w, h);
-
-        const smallW = Math.max(1, Math.ceil(w / pixelSize));
-        const smallH = Math.max(1, Math.ceil(h / pixelSize));
-
-        const tempCanvas = document.createElement('canvas');
-        const tempCtx = tempCanvas.getContext('2d');
-        tempCanvas.width = smallW;
-        tempCanvas.height = smallH;
-
-        tempCtx.drawImage(img, 0, 0, smallW, smallH);
-        ctx.drawImage(tempCanvas, 0, 0, w, h);
-      }
-    }
-  });
-})();
+// Pixelate Reveal (DISABLED)
+// This feature has been removed for performance optimization
 
 // Typewriter Effect
 (function() {
   'use strict';
 
-  console.log('Typewriter + ScrollTrigger loaded');
-
   window.addEventListener('DOMContentLoaded', () => {
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-      console.warn('GSAP/ScrollTrigger not loaded. Typewriter effect will not work.');
       return;
     }
 
@@ -560,8 +459,6 @@
       element.textContent = '';
       element.style.visibility = 'visible';
 
-      console.log(`Typing: "${text}"`);
-
       let index = 0;
 
       function typeChar() {
@@ -571,8 +468,6 @@
 
           const variation = Math.random() * 10 - 5;
           setTimeout(typeChar, speed + variation);
-        } else {
-          console.log('Typing complete!');
         }
       }
 
@@ -580,7 +475,6 @@
     }
 
     const elements = document.querySelectorAll('[data-typewriter]');
-    console.log(`Found ${elements.length} typewriter elements`);
 
     elements.forEach((el) => {
       ScrollTrigger.create({
@@ -588,7 +482,6 @@
         start: 'top 80%',
         once: true,
         onEnter: () => {
-          console.log('Element in view - starting typewriter');
           retroType(el, 15);
         },
       });
@@ -602,7 +495,6 @@
 
   function animateSVGFlash() {
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') {
-      console.warn('GSAP/ScrollTrigger not loaded. SVG flash animation will not work.');
       return;
     }
 
@@ -658,7 +550,6 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     if (typeof gsap === 'undefined') {
-      console.warn('GSAP not loaded. Pixel burst effect will not work.');
       return;
     }
 
@@ -784,7 +675,6 @@
 
     try {
       localStorage.setItem(config.storageKey, JSON.stringify(item));
-      console.log(`💾 Saved with ${config.expiryDays}-day expiry`);
       return true;
     } catch (e) {
       console.error('❌ Failed to save:', e);
@@ -797,12 +687,10 @@
       const itemStr = localStorage.getItem(config.storageKey);
 
       if (!itemStr) {
-        console.log('📭 No submission found');
         return false;
       }
 
       if (itemStr === 'true') {
-        console.log('🔄 Old format detected, converting...');
         saveWithExpiry(config);
         return true;
       }
@@ -811,34 +699,28 @@
       const now = new Date();
 
       if (now.getTime() > item.expiry) {
-        console.log('⏰ Submission expired, clearing...');
         localStorage.removeItem(config.storageKey);
         return false;
       }
 
-      console.log('✅ Valid submission found');
       return item.value === true;
 
     } catch (e) {
-      console.warn('⚠️ Error checking storage:', e);
       return false;
     }
   }
 
   function initSwiper(config, name) {
     if (typeof window.Swiper === 'undefined') {
-      console.warn('Swiper library not loaded');
       return null;
     }
 
     const container = document.querySelector(config.selector);
     if (!container) {
-      console.warn(`⚠️ Swiper container not found: ${config.selector}`);
       return null;
     }
 
     if (container.dataset.swiperInitialized === 'true' && container.swiper) {
-      console.log(`ℹ️ Swiper (${name}) already initialized`);
       return container.swiper;
     }
 
@@ -865,16 +747,7 @@
       keyboard: {
         enabled: true
       },
-      watchOverflow: true,
-      on: {
-        init: function () {
-          console.log(`✅ Swiper (${name}) initialized`);
-          console.log('Total slides:', this.slides.length);
-        },
-        slideChange: function () {
-          console.log(`Current slide (${name}):`, this.realIndex + 1);
-        }
-      }
+      watchOverflow: true
     };
 
     try {
@@ -888,8 +761,6 @@
   }
 
   function initEmailGate() {
-    console.log('🟢 Email gate initialized');
-
     const hero = document.querySelector('[data-hero-section]');
     const gate = document.querySelector('[data-email-gate]');
     const formBlock = gate?.querySelector('.gate_form-block.w-form');
@@ -901,7 +772,6 @@
     }
 
     if (checkWithExpiry(EMAIL_GATE_CONFIG)) {
-      console.log('✅ User already submitted (within 7 days)');
       gate.style.display = 'none';
       return;
     }
@@ -914,8 +784,6 @@
     gate.style.display = 'none';
 
     window.showEmailGate = () => {
-      console.log('📧 Showing gate');
-
       savedScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
 
       gate.style.display = 'flex';
@@ -933,8 +801,6 @@
     };
 
     window.hideEmailGate = () => {
-      console.log('🔒 Hiding gate');
-
       gate.classList.remove('active');
 
       setTimeout(() => {
@@ -949,8 +815,6 @@
           top: savedScrollPosition,
           behavior: 'auto'
         });
-
-        console.log('✅ Gate hidden, scroll position restored');
       }, EMAIL_GATE_CONFIG.animationDelay);
     };
 
@@ -958,11 +822,8 @@
       if (successHandled) return;
       successHandled = true;
 
-      console.log('🎉 Form submitted successfully!');
-
       saveWithExpiry(EMAIL_GATE_CONFIG);
 
-      console.log(`⏱️ Hiding in ${EMAIL_GATE_CONFIG.hideDelay}ms...`);
       setTimeout(() => {
         window.hideEmailGate();
       }, EMAIL_GATE_CONFIG.hideDelay);
@@ -977,7 +838,6 @@
         : false;
 
       if (hasClass || messageVisible) {
-        console.log('✅ Success detected');
         window.handleEmailSuccess();
         observeSuccess.disconnect();
       }
@@ -1004,7 +864,6 @@
         : false;
 
       if (hasClass || messageVisible) {
-        console.log('✅ Success detected via polling');
         window.handleEmailSuccess();
         if (checkInterval) clearInterval(checkInterval);
       }
@@ -1019,7 +878,6 @@
 
       if (heroRect.bottom <= triggerPoint) {
         scrollTriggered = true;
-        console.log(`📜 Hero bottom reached ${EMAIL_GATE_CONFIG.triggerThreshold * 100}% of viewport - triggering email gate`);
 
         window.showEmailGate();
 
@@ -1038,8 +896,6 @@
     window.addEventListener('touchmove', throttledScrollHandler, { passive: true });
 
     checkScrollPastHero();
-
-    console.log(`✅ Email gate ready - will trigger when hero bottom reaches ${EMAIL_GATE_CONFIG.triggerThreshold * 100}% of viewport`);
   }
 
   function initSwipers() {
@@ -1064,10 +920,6 @@
 
   function waitForSwiper(attempt = 0) {
     if (typeof window.Swiper === 'undefined') {
-      if (attempt === 0) {
-        console.log('🌀 Waiting for Swiper to become available...');
-      }
-
       if (attempt >= SWIPER_MAX_ATTEMPTS) {
         console.error('❌ Swiper library not found after waiting');
         return;
@@ -1075,10 +927,6 @@
 
       setTimeout(() => waitForSwiper(attempt + 1), SWIPER_RETRY_DELAY);
       return;
-    }
-
-    if (attempt > 0) {
-      console.log('✅ Swiper library detected');
     }
 
     initSwipers();
@@ -1112,32 +960,26 @@
 
   function initBunnyPlayer() {
     var players = document.querySelectorAll('[data-bunny-player-init]');
-    console.log('🎬 Bunny Player: Found', players.length, 'player(s)');
 
     if (players.length === 0) {
-      console.warn('⚠️ Bunny Player: No players found with [data-bunny-player-init]');
       return;
     }
 
     players.forEach(function(player) {
       var src = player.getAttribute('data-player-src');
       if (!src) {
-        console.warn('⚠️ Bunny Player: Missing data-player-src attribute');
         return;
       }
 
       var video = player.querySelector('video');
       if (!video) {
-        console.warn('⚠️ Bunny Player: No <video> element found in player');
         return;
       }
-
-      console.log('🎬 Bunny Player: Initializing with src:', src);
 
       try {
         if (!video.paused) video.pause();
       } catch(e) {
-        console.warn('⚠️ Bunny Player: Error pausing video:', e);
+        // Ignore pause errors
       }
 
       // Don't remove src if it's already set and working
@@ -1146,7 +988,7 @@
           video.removeAttribute('src');
           video.load();
         } catch(e) {
-          console.warn('⚠️ Bunny Player: Error resetting video src:', e);
+          // Ignore reset errors
         }
       }
 
@@ -1196,8 +1038,6 @@
       var isSafariNative = !!video.canPlayType('application/vnd.apple.mpegurl');
       var canUseHlsJs = !!(window.Hls && Hls.isSupported()) && !isSafariNative;
 
-      console.log('🎬 Bunny Player: Safari native HLS:', isSafariNative, '| Can use Hls.js:', canUseHlsJs);
-
       if (updateSize === 'true' && !isLazyMeta) {
         if (isLazyTrue) {
           // Do nothing
@@ -1229,17 +1069,15 @@
       var lastPauseBy = '';
       function attachMediaOnce() {
         if (isAttached) {
-          console.log('🎬 Bunny Player: Media already attached');
           return;
         }
         isAttached = true;
-        console.log('🎬 Bunny Player: Attaching media...');
 
         if (player._hls) {
           try {
             player._hls.destroy();
           } catch(e) {
-            console.warn('⚠️ Bunny Player: Error destroying HLS:', e);
+            // Ignore HLS destruction errors
           }
           player._hls = null;
         }
@@ -1257,11 +1095,9 @@
             var hls = new Hls({ maxBufferLength: 10 });
             hls.attachMedia(video);
             hls.on(Hls.Events.MEDIA_ATTACHED, function() {
-              console.log('🎬 Bunny Player: HLS media attached, loading source');
               hls.loadSource(src);
             });
             hls.on(Hls.Events.MANIFEST_PARSED, function() {
-              console.log('🎬 Bunny Player: HLS manifest parsed');
               readyIfIdle(player, pendingPlay);
               if (updateSize === 'true') {
                 var lvls = hls.levels || [];
@@ -1300,7 +1136,6 @@
             video.src = src;
           }
         } else {
-          console.log('🎬 Bunny Player: Using native video src');
           video.src = src;
         }
       }
@@ -1392,14 +1227,12 @@
       video.addEventListener('durationchange', updateBufferedBar);
 
       video.addEventListener('play', function() {
-        console.log('🎬 Bunny Player: Video play event');
         setActivated(true);
         cancelAnimationFrame(rafId);
         loop();
         setStatus('playing');
       });
       video.addEventListener('playing', function() {
-        console.log('🎬 Bunny Player: Video playing event');
         pendingPlay = false;
         setStatus('playing');
       });
@@ -1410,11 +1243,9 @@
         setStatus('paused');
       });
       video.addEventListener('waiting', function() {
-        console.log('🎬 Bunny Player: Video waiting for data');
         setStatus('loading');
       });
       video.addEventListener('canplay', function() {
-        console.log('🎬 Bunny Player: Video can play');
         readyIfIdle(player, pendingPlay);
       });
       video.addEventListener('ended', function() {
@@ -1431,11 +1262,10 @@
         setStatus('error');
       });
       video.addEventListener('loadstart', function() {
-        console.log('🎬 Bunny Player: Video load started');
         setStatus('loading');
       });
       video.addEventListener('loadeddata', function() {
-        console.log('🎬 Bunny Player: Video data loaded');
+        // Data loaded
       });
 
       if (timeline) {
@@ -1655,11 +1485,9 @@
   // Initialize on DOM ready or if already loaded
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('🎬 Bunny Player: DOM loaded, initializing...');
       initBunnyPlayer();
     });
   } else {
-    console.log('🎬 Bunny Player: DOM already ready, initializing...');
     initBunnyPlayer();
   }
 })();
