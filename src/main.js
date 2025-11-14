@@ -71,8 +71,28 @@
 		"mouseover",
 		(e) => {
 			const target = e.target;
-			if (target?.matches?.(selector) && !attachedElements.has(target)) {
-				attachListeners();
+			// Check if target or any parent matches the selector
+			const matchingElement = target?.closest?.(selector);
+			if (matchingElement) {
+				if (!attachedElements.has(matchingElement)) {
+					attachListeners();
+				}
+				cursor.style.backgroundImage = `url(${hoverCursor})`;
+			}
+		},
+		{ passive: true },
+	);
+
+	document.addEventListener(
+		"mouseout",
+		(e) => {
+			const target = e.target;
+			const relatedTarget = e.relatedTarget;
+			// Check if we're leaving a matching element and not entering another one
+			const matchingElement = target?.closest?.(selector);
+			const enteringMatchingElement = relatedTarget?.closest?.(selector);
+			if (matchingElement && !enteringMatchingElement) {
+				cursor.style.backgroundImage = `url(${defaultCursor})`;
 			}
 		},
 		{ passive: true },
