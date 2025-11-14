@@ -417,7 +417,7 @@
 })();
 
 // Pixelate Reveal
-(() => {
+/* (() => {
 	window.addEventListener("load", () => {
 		const ENABLE_PIXELATE_REVEAL = false;
 		if (!ENABLE_PIXELATE_REVEAL) {
@@ -544,7 +544,7 @@
 			}
 		}
 	});
-})();
+})(); */
 
 // Typewriter Effect
 (() => {
