@@ -44,22 +44,6 @@
 		interactiveElements.forEach((el) => {
 			if (attachedElements.has(el)) return;
 			attachedElements.add(el);
-
-			el.addEventListener(
-				"mouseenter",
-				() => {
-					cursor.style.backgroundImage = `url(${hoverCursor})`;
-				},
-				{ passive: true },
-			);
-
-			el.addEventListener(
-				"mouseleave",
-				() => {
-					cursor.style.backgroundImage = `url(${defaultCursor})`;
-				},
-				{ passive: true },
-			);
 		});
 	}
 
@@ -456,20 +440,41 @@
 
 			const canvas = document.createElement("canvas");
 			const ctx = canvas.getContext("2d", { willReadFrequently: false });
+			const tempCanvas = document.createElement("canvas");
+			const tempCtx = tempCanvas.getContext("2d");
 
-			// Limit canvas size for better performance (max 2000px)
-			const maxSize = 2000;
-			let canvasWidth = img.naturalWidth;
-			let canvasHeight = img.naturalHeight;
+			const maxSize = 1600;
+			const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+			const wrapperRect = wrapper.getBoundingClientRect();
 
-			if (canvasWidth > maxSize || canvasHeight > maxSize) {
-				const ratio = Math.min(maxSize / canvasWidth, maxSize / canvasHeight);
-				canvasWidth = Math.floor(canvasWidth * ratio);
-				canvasHeight = Math.floor(canvasHeight * ratio);
+			const naturalWidth =
+				img.naturalWidth || img.width || wrapperRect.width || 1;
+			const naturalHeight =
+				img.naturalHeight || img.height || wrapperRect.height || 1;
+			const aspectRatio = naturalWidth / naturalHeight || 1;
+
+			let displayWidth =
+				(wrapperRect.width || img.clientWidth || naturalWidth) * pixelRatio;
+			let displayHeight = displayWidth / aspectRatio;
+
+			if (!displayWidth || !displayHeight) {
+				displayWidth = naturalWidth;
+				displayHeight = naturalHeight;
 			}
 
-			canvas.width = canvasWidth;
-			canvas.height = canvasHeight;
+			displayWidth = Math.min(maxSize, Math.max(32, Math.round(displayWidth)));
+			displayHeight = Math.min(
+				maxSize,
+				Math.max(32, Math.round(displayHeight)),
+			);
+
+			canvas.width = displayWidth;
+			canvas.height = displayHeight;
+
+			if (displayWidth <= 32 || displayHeight <= 32) {
+				img.style.opacity = "1";
+				return;
+			}
 
 			Object.assign(canvas.style, {
 				position: "absolute",
@@ -521,10 +526,10 @@
 				const smallW = Math.max(1, Math.ceil(w / pixelSize));
 				const smallH = Math.max(1, Math.ceil(h / pixelSize));
 
-				const tempCanvas = document.createElement("canvas");
-				const tempCtx = tempCanvas.getContext("2d");
 				tempCanvas.width = smallW;
 				tempCanvas.height = smallH;
+				tempCtx.imageSmoothingEnabled = false;
+				tempCtx.clearRect(0, 0, smallW, smallH);
 
 				tempCtx.drawImage(img, 0, 0, smallW, smallH);
 				ctx.drawImage(tempCanvas, 0, 0, w, h);
