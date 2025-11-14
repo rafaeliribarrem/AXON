@@ -50,22 +50,25 @@ In your Webflow project, go to **Project Settings > Custom Code > Head Code** an
 
 After the external libraries, add your bundled script using JSDelivr:
 
-**Option 1: From GitHub (Recommended)**
+**Option 1: From GitHub (Latest)**
 ```html
 <!-- Your Custom Bundle via JSDelivr -->
-<script defer src="https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@main/dist/main.iife.js"></script>
+<script defer src="https://cdn.jsdelivr.net/gh/rafaeliribarrem/AXON@main/dist/main.iife.js"></script>
 ```
 
-**Option 2: From GitHub Release/Tag (Best for Production)**
+**Option 2: From Specific Commit (Recommended for Production)**
+```html
+<!-- Your Custom Bundle via JSDelivr (pinned to specific commit) -->
+<script defer src="https://cdn.jsdelivr.net/gh/rafaeliribarrem/AXON@3d25d75/dist/main.iife.js"></script>
+```
+
+**Option 3: From GitHub Release/Tag**
 ```html
 <!-- Your Custom Bundle via JSDelivr (versioned) -->
-<script defer src="https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@v1.0.0/dist/main.iife.js"></script>
+<script defer src="https://cdn.jsdelivr.net/gh/rafaeliribarrem/AXON@v1.0.0/dist/main.iife.js"></script>
 ```
 
-**Replace:**
-- `YOUR_USERNAME` - Your GitHub username
-- `YOUR_REPO` - Your repository name
-- `@main` or `@v1.0.0` - Branch name or release tag
+**Current Production Commit:** `3d25d75` (Pixelate reveal disabled)
 
 ### Step 3: Load Order
 
@@ -227,17 +230,17 @@ The output will be in `dist/main.iife.js`.
 
 **Latest from main branch:**
 ```
-https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@main/dist/main.iife.js
+https://cdn.jsdelivr.net/gh/rafaeliribarrem/AXON@main/dist/main.iife.js
 ```
 
-**Specific version (recommended for production):**
+**Specific commit (recommended for production):**
 ```
-https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@v1.0.0/dist/main.iife.js
+https://cdn.jsdelivr.net/gh/rafaeliribarrem/AXON@3d25d75/dist/main.iife.js
 ```
 
-**With minified version (if you add .min.js):**
+**Specific version tag:**
 ```
-https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@main/dist/main.iife.min.js
+https://cdn.jsdelivr.net/gh/rafaeliribarrem/AXON@v1.0.0/dist/main.iife.js
 ```
 
 ### Updating the Bundle

@@ -20,7 +20,11 @@ The bundle will be generated in `dist/main.iife.js`.
 3. Use JSDelivr URL in Webflow:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/YOUR_USERNAME/YOUR_REPO@main/dist/main.iife.js"></script>
+<!-- Latest version -->
+<script src="https://cdn.jsdelivr.net/gh/rafaeliribarrem/AXON@main/dist/main.iife.js"></script>
+
+<!-- Pinned to specific commit (recommended for production) -->
+<script src="https://cdn.jsdelivr.net/gh/rafaeliribarrem/AXON@3d25d75/dist/main.iife.js"></script>
 ```
 
 ## Features
