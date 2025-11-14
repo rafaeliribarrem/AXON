@@ -34,7 +34,7 @@
 	);
 
 	const selector =
-		'a, button, .articles_cms_radio, input[type="submit"], input[type="button"], input[type="radio"], input[type="checkbox"], select, textarea, .clickable, [onclick], .w-button, .w-nav-link, .w-tab-link, .w-dropdown-toggle, .w-dropdown-link, .w-slider-arrow-left, .w-slider-arrow-right, .w-slider-dot, .w-pagination-previous, .w-pagination-next, .w-radio, .w-form-label, .bunny-player__big-btn';
+		'a, button, .articles_cms_radio, input[type="submit"], input[type="button"], input[type="radio"], input[type="checkbox"], select, textarea, .clickable, [onclick], .w-button, .w-nav-link, .w-tab-link, .w-dropdown-toggle, .w-dropdown-link, .w-slider-arrow-left, .w-slider-arrow-right, .w-slider-dot, .w-pagination-previous, .w-pagination-next, .w-radio, .w-form-label, .bunny-player__big-btn, .bunny-player__playpause';
 
 	const attachedElements = new WeakSet();
 	let observerTimeout = null;
