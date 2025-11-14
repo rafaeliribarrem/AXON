@@ -15,7 +15,7 @@
     cursor.style.top = (e.clientY + 2) + 'px';
   });
 
-  const interactiveElements = document.querySelectorAll('a, button, input[type="submit"], input[type="button"], select, textarea, .clickable, [onclick]');
+  const interactiveElements = document.querySelectorAll('a, button, input[type="submit"], input[type="button"], <input type="radio">, select, textarea, .clickable, [onclick]');
 
   interactiveElements.forEach(el => {
     el.addEventListener('mouseenter', () => {
