@@ -67,6 +67,9 @@
 	attachListeners();
 
 	// Use event delegation for dynamically added elements (throttled)
+	// This handles elements that are created after initial load or nested elements
+	let currentHoverElement = null;
+	
 	document.addEventListener(
 		"mouseover",
 		(e) => {
@@ -77,7 +80,11 @@
 				if (!attachedElements.has(matchingElement)) {
 					attachListeners();
 				}
-				cursor.style.backgroundImage = `url(${hoverCursor})`;
+				// Only update cursor if we're entering a new matching element
+				if (currentHoverElement !== matchingElement) {
+					currentHoverElement = matchingElement;
+					cursor.style.backgroundImage = `url(${hoverCursor})`;
+				}
 			}
 		},
 		{ passive: true },
@@ -92,7 +99,10 @@
 			const matchingElement = target?.closest?.(selector);
 			const enteringMatchingElement = relatedTarget?.closest?.(selector);
 			if (matchingElement && !enteringMatchingElement) {
+				currentHoverElement = null;
 				cursor.style.backgroundImage = `url(${defaultCursor})`;
+			} else if (enteringMatchingElement) {
+				currentHoverElement = enteringMatchingElement;
 			}
 		},
 		{ passive: true },
@@ -113,6 +123,24 @@
 			subtree: true,
 		});
 	}
+
+	// Retry for Bunny Player elements that may be created after page load
+	function retryBunnyPlayer() {
+		const bunnyPlayers = document.querySelectorAll('[data-bunny-player-init]');
+		if (bunnyPlayers.length > 0) {
+			// Wait a bit for player controls to be initialized
+			setTimeout(() => {
+				attachListeners();
+			}, 500);
+		}
+	}
+
+	// Retry immediately and after page load
+	retryBunnyPlayer();
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", retryBunnyPlayer);
+	}
+	window.addEventListener("load", retryBunnyPlayer);
 })();
 
 // Hamburger Toggle
