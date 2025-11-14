@@ -69,7 +69,7 @@
 	// Use event delegation for dynamically added elements (throttled)
 	// This handles elements that are created after initial load or nested elements
 	let currentHoverElement = null;
-	
+
 	document.addEventListener(
 		"mouseover",
 		(e) => {
@@ -126,7 +126,7 @@
 
 	// Retry for Bunny Player elements that may be created after page load
 	function retryBunnyPlayer() {
-		const bunnyPlayers = document.querySelectorAll('[data-bunny-player-init]');
+		const bunnyPlayers = document.querySelectorAll("[data-bunny-player-init]");
 		if (bunnyPlayers.length > 0) {
 			// Wait a bit for player controls to be initialized
 			setTimeout(() => {
