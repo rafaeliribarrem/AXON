@@ -9,48 +9,83 @@
 		"https://cdn.prod.website-files.com/68f62fcbc64d17f90e046dfa/690507948080bd9a825974f5_cursor-auto.avif";
 
 	cursor.style.backgroundImage = `url(${defaultCursor})`;
+	cursor.style.willChange = "transform";
+	cursor.style.transform = "translate3d(0, 0, 0)";
 
-	document.addEventListener("mousemove", (e) => {
-		cursor.style.left = e.clientX + "px";
-		cursor.style.top = e.clientY + 2 + "px";
-	});
+	let rafId = null;
+	let mouseX = 0;
+	let mouseY = 0;
+
+	function updateCursor() {
+		cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+		rafId = null;
+	}
+
+	document.addEventListener(
+		"mousemove",
+		(e) => {
+			mouseX = e.clientX;
+			mouseY = e.clientY + 2;
+			if (!rafId) {
+				rafId = requestAnimationFrame(updateCursor);
+			}
+		},
+		{ passive: true },
+	);
 
 	const selector =
 		'a, button, .articles_cms_radio, input[type="submit"], input[type="button"], input[type="radio"], input[type="checkbox"], select, textarea, .clickable, [onclick], .w-button, .w-nav-link, .w-tab-link, .w-dropdown-toggle, .w-dropdown-link, .w-slider-arrow-left, .w-slider-arrow-right, .w-slider-dot, .w-pagination-previous, .w-pagination-next, .w-radio, .w-form-label';
 
+	const attachedElements = new WeakSet();
+	let observerTimeout = null;
+
 	function attachListeners() {
 		const interactiveElements = document.querySelectorAll(selector);
 		interactiveElements.forEach((el) => {
-			if (el.dataset.cursorListener === "true") return;
-			el.dataset.cursorListener = "true";
+			if (attachedElements.has(el)) return;
+			attachedElements.add(el);
 
-			el.addEventListener("mouseenter", () => {
-				cursor.style.backgroundImage = `url(${hoverCursor})`;
-			});
+			el.addEventListener(
+				"mouseenter",
+				() => {
+					cursor.style.backgroundImage = `url(${hoverCursor})`;
+				},
+				{ passive: true },
+			);
 
-			el.addEventListener("mouseleave", () => {
-				cursor.style.backgroundImage = `url(${defaultCursor})`;
-			});
+			el.addEventListener(
+				"mouseleave",
+				() => {
+					cursor.style.backgroundImage = `url(${defaultCursor})`;
+				},
+				{ passive: true },
+			);
 		});
 	}
 
 	// Attach listeners to existing elements
 	attachListeners();
 
-	// Use event delegation for dynamically added elements
-	document.addEventListener("mouseover", (e) => {
-		const target = e.target;
-		if (target?.matches?.(selector)) {
-			if (target.dataset.cursorListener !== "true") {
+	// Use event delegation for dynamically added elements (throttled)
+	document.addEventListener(
+		"mouseover",
+		(e) => {
+			const target = e.target;
+			if (target?.matches?.(selector) && !attachedElements.has(target)) {
 				attachListeners();
 			}
-		}
-	});
+		},
+		{ passive: true },
+	);
 
-	// Watch for new elements added to DOM
+	// Watch for new elements added to DOM (throttled)
 	if (typeof MutationObserver !== "undefined") {
 		const observer = new MutationObserver(() => {
-			attachListeners();
+			if (observerTimeout) return;
+			observerTimeout = setTimeout(() => {
+				attachListeners();
+				observerTimeout = null;
+			}, 100);
 		});
 
 		observer.observe(document.body, {
