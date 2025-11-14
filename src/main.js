@@ -15,19 +15,49 @@
 		cursor.style.top = e.clientY + 2 + "px";
 	});
 
-	const interactiveElements = document.querySelectorAll(
-		'a, button, .articles_cms_radio, input[type="submit"], input[type="button"], input[type="radio"], input[type="checkbox"], select, textarea, .clickable, [onclick], .w-button, .w-nav-link, .w-tab-link, .w-dropdown-toggle, .w-dropdown-link, .w-slider-arrow-left, .w-slider-arrow-right, .w-slider-dot, .w-pagination-previous, .w-pagination-next, .w-radio, .w-form-label',
-	);
+	const selector =
+		'a, button, .articles_cms_radio, input[type="submit"], input[type="button"], input[type="radio"], input[type="checkbox"], select, textarea, .clickable, [onclick], .w-button, .w-nav-link, .w-tab-link, .w-dropdown-toggle, .w-dropdown-link, .w-slider-arrow-left, .w-slider-arrow-right, .w-slider-dot, .w-pagination-previous, .w-pagination-next, .w-radio, .w-form-label';
 
-	interactiveElements.forEach((el) => {
-		el.addEventListener("mouseenter", () => {
-			cursor.style.backgroundImage = `url(${hoverCursor})`;
-		});
+	function attachListeners() {
+		const interactiveElements = document.querySelectorAll(selector);
+		interactiveElements.forEach((el) => {
+			if (el.dataset.cursorListener === "true") return;
+			el.dataset.cursorListener = "true";
 
-		el.addEventListener("mouseleave", () => {
-			cursor.style.backgroundImage = `url(${defaultCursor})`;
+			el.addEventListener("mouseenter", () => {
+				cursor.style.backgroundImage = `url(${hoverCursor})`;
+			});
+
+			el.addEventListener("mouseleave", () => {
+				cursor.style.backgroundImage = `url(${defaultCursor})`;
+			});
 		});
+	}
+
+	// Attach listeners to existing elements
+	attachListeners();
+
+	// Use event delegation for dynamically added elements
+	document.addEventListener("mouseover", (e) => {
+		const target = e.target;
+		if (target?.matches?.(selector)) {
+			if (target.dataset.cursorListener !== "true") {
+				attachListeners();
+			}
+		}
 	});
+
+	// Watch for new elements added to DOM
+	if (typeof MutationObserver !== "undefined") {
+		const observer = new MutationObserver(() => {
+			attachListeners();
+		});
+
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true,
+		});
+	}
 })();
 
 // Hamburger Toggle
