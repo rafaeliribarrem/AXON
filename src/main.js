@@ -419,6 +419,14 @@
 // Pixelate Reveal
 (() => {
 	window.addEventListener("load", () => {
+		const ENABLE_PIXELATE_REVEAL = false;
+		if (!ENABLE_PIXELATE_REVEAL) {
+			document.querySelectorAll("[data-pixelate-img]").forEach((img) => {
+				img.style.opacity = "1";
+			});
+			return;
+		}
+
 		if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
 			return;
 		}
