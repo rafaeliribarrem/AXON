@@ -4,9 +4,9 @@
 	if (!cursor) return;
 
 	const defaultCursor =
-		"https://cdn.prod.website-files.com/68f62fcbc64d17f90e046dfa/6905079459f55e8c6f5dcfbb_cursor-interact.avif";
+		"https://cdn.prod.website-files.com/68f62fcbc64d17f90e046dfa/691903dc69525a5a125ce065_Cursor-new.png";
 	const hoverCursor =
-		"https://cdn.prod.website-files.com/68f62fcbc64d17f90e046dfa/690507948080bd9a825974f5_cursor-auto.avif";
+		"https://cdn.prod.website-files.com/68f62fcbc64d17f90e046dfa/691903dc7343a867f9b80d88_Pointer-new.png";
 
 	cursor.style.backgroundImage = `url(${defaultCursor})`;
 	cursor.style.willChange = "transform";
