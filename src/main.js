@@ -50,62 +50,54 @@
 	// Attach listeners to existing elements
 	attachListeners();
 
-	// Use event delegation for dynamically added elements (throttled)
-	// This handles elements that are created after initial load or nested elements
+	// Use event delegation for dynamically added elements
+	// Check on every mouse move which element we're hovering
 	let currentHoverElement = null;
 
-	function updateCursorOnHover(element) {
-		if (element && currentHoverElement !== element) {
-			currentHoverElement = element;
-			cursor.style.backgroundImage = `url(${hoverCursor})`;
+	function checkHoverElement(element) {
+		if (!element || element === document.body || element === document.documentElement) {
+			return null;
+		}
+		
+		// Check if element matches selector
+		if (element.matches && element.matches(selector)) {
+			return element;
+		}
+		
+		// Check parent
+		return element.parentElement ? checkHoverElement(element.parentElement) : null;
+	}
+
+	function updateCursorState() {
+		const elementUnderMouse = document.elementFromPoint(mouseX, mouseY);
+		const matchingElement = checkHoverElement(elementUnderMouse);
+		
+		if (matchingElement) {
+			if (!attachedElements.has(matchingElement)) {
+				attachListeners();
+			}
+			if (currentHoverElement !== matchingElement) {
+				currentHoverElement = matchingElement;
+				cursor.style.backgroundImage = `url(${hoverCursor})`;
+			}
+		} else {
+			if (currentHoverElement !== null) {
+				currentHoverElement = null;
+				cursor.style.backgroundImage = `url(${defaultCursor})`;
+			}
 		}
 	}
 
-	function updateCursorOnLeave() {
-		if (currentHoverElement !== null) {
-			currentHoverElement = null;
-			cursor.style.backgroundImage = `url(${defaultCursor})`;
-		}
-	}
-
+	// Update cursor state on mouse move
 	document.addEventListener(
-		"mouseover",
+		"mousemove",
 		(e) => {
-			const target = e.target;
-			// Check if target or any parent matches the selector
-			const matchingElement = target?.closest?.(selector);
-			if (matchingElement) {
-				if (!attachedElements.has(matchingElement)) {
-					attachListeners();
-				}
-				updateCursorOnHover(matchingElement);
+			mouseX = e.clientX;
+			mouseY = e.clientY + 2;
+			updateCursorState();
+			if (!rafId) {
+				rafId = requestAnimationFrame(updateCursor);
 			}
-		},
-		{ passive: true },
-	);
-
-	document.addEventListener(
-		"mouseout",
-		(e) => {
-			const target = e.target;
-			const relatedTarget = e.relatedTarget;
-			// Check if we're leaving a matching element and not entering another one
-			const matchingElement = target?.closest?.(selector);
-			const enteringMatchingElement = relatedTarget?.closest?.(selector);
-			if (matchingElement && !enteringMatchingElement) {
-				updateCursorOnLeave();
-			} else if (enteringMatchingElement) {
-				updateCursorOnHover(enteringMatchingElement);
-			}
-		},
-		{ passive: true },
-	);
-
-	// Fallback: also listen to mouseleave on document to catch edge cases
-	document.addEventListener(
-		"mouseleave",
-		() => {
-			updateCursorOnLeave();
 		},
 		{ passive: true },
 	);
