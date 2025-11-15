@@ -11,13 +11,25 @@
 	cursor.style.backgroundImage = `url(${defaultCursor})`;
 	cursor.style.willChange = "transform";
 	cursor.style.transform = "translate3d(0, 0, 0)";
+	cursor.style.transformOrigin = "0 0";
+	cursor.style.pointerEvents = "none";
+	cursor.style.position = "fixed";
+	cursor.style.top = "0";
+	cursor.style.left = "0";
+	cursor.style.zIndex = "999999";
+
+	// Offset to align cursor hotspot (adjust these values based on your cursor design)
+	// For most cursors, the hotspot is at the top-left corner (0, 0)
+	// If your cursor hotspot is in the center, use half width/height
+	const cursorOffsetX = 0;
+	const cursorOffsetY = 0;
 
 	let rafId = null;
 	let mouseX = 0;
 	let mouseY = 0;
 
 	function updateCursor() {
-		cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+		cursor.style.transform = `translate3d(${mouseX + cursorOffsetX}px, ${mouseY + cursorOffsetY}px, 0)`;
 		rafId = null;
 	}
 
@@ -25,7 +37,7 @@
 		"mousemove",
 		(e) => {
 			mouseX = e.clientX;
-			mouseY = e.clientY + 2;
+			mouseY = e.clientY;
 			if (!rafId) {
 				rafId = requestAnimationFrame(updateCursor);
 			}
@@ -58,12 +70,12 @@
 		if (!element || element === document.body || element === document.documentElement) {
 			return null;
 		}
-		
+
 		// Check if element matches selector
 		if (element.matches && element.matches(selector)) {
 			return element;
 		}
-		
+
 		// Check parent
 		return element.parentElement ? checkHoverElement(element.parentElement) : null;
 	}
@@ -71,7 +83,7 @@
 	function updateCursorState() {
 		const elementUnderMouse = document.elementFromPoint(mouseX, mouseY);
 		const matchingElement = checkHoverElement(elementUnderMouse);
-		
+
 		if (matchingElement) {
 			if (!attachedElements.has(matchingElement)) {
 				attachListeners();
