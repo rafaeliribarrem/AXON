@@ -54,6 +54,20 @@
 	// This handles elements that are created after initial load or nested elements
 	let currentHoverElement = null;
 
+	function updateCursorOnHover(element) {
+		if (element && currentHoverElement !== element) {
+			currentHoverElement = element;
+			cursor.style.backgroundImage = `url(${hoverCursor})`;
+		}
+	}
+
+	function updateCursorOnLeave() {
+		if (currentHoverElement !== null) {
+			currentHoverElement = null;
+			cursor.style.backgroundImage = `url(${defaultCursor})`;
+		}
+	}
+
 	document.addEventListener(
 		"mouseover",
 		(e) => {
@@ -64,11 +78,7 @@
 				if (!attachedElements.has(matchingElement)) {
 					attachListeners();
 				}
-				// Only update cursor if we're entering a new matching element
-				if (currentHoverElement !== matchingElement) {
-					currentHoverElement = matchingElement;
-					cursor.style.backgroundImage = `url(${hoverCursor})`;
-				}
+				updateCursorOnHover(matchingElement);
 			}
 		},
 		{ passive: true },
@@ -83,11 +93,19 @@
 			const matchingElement = target?.closest?.(selector);
 			const enteringMatchingElement = relatedTarget?.closest?.(selector);
 			if (matchingElement && !enteringMatchingElement) {
-				currentHoverElement = null;
-				cursor.style.backgroundImage = `url(${defaultCursor})`;
+				updateCursorOnLeave();
 			} else if (enteringMatchingElement) {
-				currentHoverElement = enteringMatchingElement;
+				updateCursorOnHover(enteringMatchingElement);
 			}
+		},
+		{ passive: true },
+	);
+
+	// Fallback: also listen to mouseleave on document to catch edge cases
+	document.addEventListener(
+		"mouseleave",
+		() => {
+			updateCursorOnLeave();
 		},
 		{ passive: true },
 	);
